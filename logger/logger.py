@@ -1,32 +1,43 @@
+"""Module that logging logic."""
+
 import logging
 import logging.handlers
 import re
 import sys
+from enum import Enum
 
 import urllib3
 
 
-class ColorCodes:
-    grey = "\x1b[38;21m"
-    green = "\x1b[1;32m"
-    yellow = "\x1b[33;21m"
-    red = "\x1b[31;21m"
-    bold_red = "\x1b[31;1m"
-    blue = "\x1b[1;34m"
-    light_blue = "\x1b[1;36m"
-    purple = "\x1b[1;35m"
-    reset = "\x1b[0m"
+class ColorCodes(Enum):
+    """
+    ANSI escape codes for colors.
+    """
+
+    GREY = "\x1b[38;21m"
+    GREEN = "\x1b[1;32m"
+    YELLOW = "\x1b[33;21m"
+    RED = "\x1b[31;21m"
+    BOLD_RED = "\x1b[31;1m"
+    BLUE = "\x1b[1;34m"
+    LIGHT_BLUE = "\x1b[1;36m"
+    PURPLE = "\x1b[1;35m"
+    RESET = "\x1b[0m"
 
 
 class ColorizedArgsFormatter(logging.Formatter):
-    arg_colors = [ColorCodes.purple, ColorCodes.light_blue]
+    """
+    A formatter that colorizes log messages based on log level.
+    """
+
+    arg_colors = [ColorCodes.PURPLE, ColorCodes.LIGHT_BLUE]
     level_fields = ["levelname", "levelno"]
     level_to_color = {
-        logging.DEBUG: ColorCodes.grey,
-        logging.INFO: ColorCodes.green,
-        logging.WARNING: ColorCodes.yellow,
-        logging.ERROR: ColorCodes.red,
-        logging.CRITICAL: ColorCodes.bold_red,
+        logging.DEBUG: ColorCodes.GREY,
+        logging.INFO: ColorCodes.GREEN,
+        logging.WARNING: ColorCodes.YELLOW,
+        logging.ERROR: ColorCodes.RED,
+        logging.CRITICAL: ColorCodes.BOLD_RED,
     }
 
     def __init__(self, fmt: str):
@@ -37,8 +48,8 @@ class ColorizedArgsFormatter(logging.Formatter):
             color = ColorizedArgsFormatter.level_to_color[level]
             _format = fmt
             for fld in ColorizedArgsFormatter.level_fields:
-                search = "(%\(" + fld + "\).*?s)"
-                _format = re.sub(search, f"{color}\\1{ColorCodes.reset}", _format)
+                search = r"(%\(" + fld + r"\).*?s)"
+                _format = re.sub(search, f"{color}\\1{ColorCodes.RESET}", _format)
             formatter = logging.Formatter(_format)
             self.level_to_formatter[level] = formatter
 
@@ -50,6 +61,11 @@ class ColorizedArgsFormatter(logging.Formatter):
 
     @staticmethod
     def rewrite_record(record: logging.LogRecord):
+        """
+
+        :param record: Log record
+        :return:
+        """
         if not BraceFormatStyleFormatter.is_brace_format_style(record):
             return
 
@@ -65,7 +81,7 @@ class ColorizedArgsFormatter(logging.Formatter):
             color_index = placeholder_count % len(ColorizedArgsFormatter.arg_colors)
             color = ColorizedArgsFormatter.arg_colors[color_index]
             msg = msg.replace("_{{", color + "{", 1)
-            msg = msg.replace("_}}", "}" + ColorCodes.reset, 1)
+            msg = msg.replace("_}}", "}" + ColorCodes.RESET, 1)
             placeholder_count += 1
 
         record.msg = msg.format(*record.args)
@@ -83,12 +99,21 @@ class ColorizedArgsFormatter(logging.Formatter):
 
 
 class BraceFormatStyleFormatter(logging.Formatter):
+    """
+    A formatter that supports brace format style for log
+    """
+
     def __init__(self, fmt: str):
         super().__init__()
         self.formatter = logging.Formatter(fmt)
 
     @staticmethod
     def is_brace_format_style(record: logging.LogRecord):
+        """
+        Check if the log record is in brace format style
+        :param record: Log record
+        :return:
+        """
         if len(record.args) == 0:
             return False
 
@@ -109,6 +134,7 @@ class BraceFormatStyleFormatter(logging.Formatter):
 
     @staticmethod
     def rewrite_record(record: logging.LogRecord):
+        """Rewrite log record to support brace format style."""
         if not BraceFormatStyleFormatter.is_brace_format_style(record):
             return
 
@@ -128,6 +154,10 @@ class BraceFormatStyleFormatter(logging.Formatter):
 
 
 def init_logging():
+    """
+    Initializes logging.
+    :return:
+    """
     level = logging.DEBUG
     root_logger = logging.getLogger()
     root_logger.setLevel(level)

@@ -1,10 +1,8 @@
-import socket
+"""Module that contains util functions."""
 
 from common.constants import (
-    USER_AGENT,
     excluded_resource_types,
 )
-from logger.logger import logger
 
 
 async def block_aggressively(route):

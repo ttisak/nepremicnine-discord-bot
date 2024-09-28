@@ -1,8 +1,9 @@
+"""Module that contains main application logic."""
+
 import asyncio
-import os
 
 from dotenv import load_dotenv
-from database.database_manager import DatabaseManager
+
 from logger.logger import logger
 from spider.spider import run_search
 
@@ -13,28 +14,21 @@ def load_env() -> (str, str, str, int):
     :return: postgres_user, postgres_password, postgres_db
     """
     load_dotenv()
-    postgres_user = os.getenv("POSTGRES_USER")
-    postgres_password = os.getenv("POSTGRES_PASSWORD")
-    postgres_db = os.getenv("POSTGRES_DB")
-    return postgres_user, postgres_password, postgres_db
+    # return postgres_user, postgres_password, postgres_db
 
 
 async def main():
+    """
+    Main function.
+    :return:
+    """
     logger.info("Application started.")
 
     # Load env variables.
-    postgres_user, postgres_password, postgres_db = load_env()
-
-    # Setup database manager.
-    database_manager = DatabaseManager(
-        url=f"postgresql+asyncpg://"
-        f"{postgres_user}:"
-        f"{postgres_password}@localhost:5432/"
-        f"{postgres_db}"
-    )
+    # postgres_user, postgres_password, postgres_db = load_env()
 
     # Run the spider.
-    await run_search(database_manager=database_manager)
+    await run_search()
 
     logger.info("Application finished.")
 
