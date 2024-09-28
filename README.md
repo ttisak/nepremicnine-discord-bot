@@ -1,8 +1,10 @@
 # nepremicnine-discord-bot
 A discord bot for notifying about new listings on the [nepremicnine.net](https://nepremicnine.net) website using [Playwright](https://playwright.dev/python/).
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Main workflow](https://github.com/mevljas/nepremicnine-discord-bot/actions/workflows/main.yml/badge.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+
 
 ## Project setup
 
