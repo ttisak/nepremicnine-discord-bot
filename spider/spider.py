@@ -2,11 +2,12 @@
 
 from playwright.async_api import async_playwright
 
+from database.database_manager import DatabaseManager
 from logger.logger import logger
 from services.extract_service import parse_page
 
 
-async def run_search():
+async def run_spider(database_manager: DatabaseManager):
     """
     Setups the playwright library and starts the crawler.
     """
@@ -35,8 +36,35 @@ async def run_search():
 
         # await browser_page.pause()
 
-        await parse_page(browser_page=browser_page)
+        saved_results = await database_manager.get_listings()
 
+        results = await parse_page(browser_page=browser_page)
+
+        for nepremicnine_id, new_data in results.items():
+            logger.debug("Listing ID: %s", nepremicnine_id)
+
+            if nepremicnine_id in saved_results:
+                logger.debug("Listing already saved.")
+
+                _, _, _, current_price, _, _, _, _ = new_data
+
+                listing_id, saved_price = saved_results[nepremicnine_id]
+
+                if saved_price != current_price:
+                    logger.info("New saved_price detected for %s.", nepremicnine_id)
+                    await database_manager.add_new_price(
+                        listing_id=listing_id,
+                        current_price=current_price,
+                    )
+
+                else:
+                    logger.debug("No new saved_price detected.")
+
+                continue
+
+            # We found a new listing.
+            logger.info("New listing found %s.", nepremicnine_id)
+            await database_manager.save_listing(nepremicnine_id, new_data)
         await browser_page.close()
 
     await browser.close()
