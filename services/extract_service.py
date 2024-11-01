@@ -25,6 +25,7 @@ async def parse_page(
 
     # Loop through all the listings.
     extracted_data = {}
+
     for result in results:
         item_id, data = await parse_result(result)
         extracted_data[item_id] = data
@@ -43,7 +44,14 @@ async def parse_result(
 
     image_url = await item.locator(
         'xpath=div/div[contains(@class, "property-image")]/a[2]/img'
-    ).get_attribute("src")
+    ).first.get_attribute("data-src")
+
+    # Replace the url domain, so it will work on Discord.
+    if image_url and image_url.startswith("http"):
+        image_url = image_url.replace("img.nepremicnine.net", "img.onnepremicnine.net")
+    else:
+        image_url = None
+        logger.debug("No image found for the listing.")
 
     details = item.locator('xpath=div/div[contains(@class, "property-details")]')
 
