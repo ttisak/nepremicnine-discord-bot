@@ -58,11 +58,10 @@ cd 'C:\Program Files\Google\Chrome\Application'
 
 ```
 
-## Run the crawler
+## Configure the bot
+- Add Discord bot token to the **.env** file.
+- Add discord channel ids and nepremicnine.net search url pairs to the **config.txt** file.
 
-```bash
-python main.py
-```
 
 ## PgAdmin (optional)
 

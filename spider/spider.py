@@ -1,5 +1,7 @@
 """Module that contains main spider logic."""
 
+from collections import defaultdict
+
 from playwright.async_api import async_playwright
 
 from database.database_manager import DatabaseManager
@@ -13,93 +15,105 @@ async def run_spider(database_manager: DatabaseManager):
     """
     logger.info("Spider started.")
 
-    # List of new listings to send to Discord.
-    discord_listings = []
+    # Dictionary to store the listings. Key is the channel name.
+    discord_listings = defaultdict(list)
 
     async with async_playwright() as playwright:
         # Connect to the browser.
         # We need to use a real browser because of Cloudflare protection.
         browser = await playwright.chromium.connect_over_cdp("http://localhost:9222")
 
-        # create a new page inside context.
-        browser_page = await browser.new_page()
-
-        # Prevent loading some resources for better performance.
-        # await browser_page.route("**/*", block_aggressively)
-
-        page_url = (
-            "https://www.nepremicnine.net/oglasi-oddaja/ljubljana-mesto"
-            "/stanovanje/2-sobno,2.5-sobno,3-sobno,3.5-sobno,"
-            "4-sobno,4.5-sobno,5-in-vecsobno,apartma/cena-od-300"
-            "-do-900-eur-na-mesec,velikost-od-30-m2/"
-        )
-
-        await browser_page.goto(page_url)
-
-        # await browser_page.pause()
+        # Read page urls from a config file.
+        config = await read_config()
 
         saved_results = await database_manager.get_listings()
 
-        more_pages = True
         results = {}
-        index = 1
 
-        while more_pages:
-            if index > 1:
-                # Close the previous page.
-                await browser_page.close()
+        # For each url, send the results to a different channel.
+        for channel, page_url in config:
+            logger.info("Processing channel %s with URL %s", channel, page_url)
 
-                # create a new page.
-                browser_page = await browser.new_page()
-                await browser_page.goto(f"{page_url}{index}/")
+            # create a new page inside context.
+            browser_page = await browser.new_page()
 
-            results_tmp, more_pages = await parse_page(browser_page=browser_page)
-            results.update(results_tmp)
-            index += 1
+            # Prevent loading some resources for better performance.
+            # await browser_page.route("**/*", block_aggressively)
 
-        for nepremicnine_id, new_data in results.items():
-            logger.debug("Listing ID: %s", nepremicnine_id)
+            await browser_page.goto(page_url)
 
-            if nepremicnine_id in saved_results:
-                logger.debug("Listing already saved.")
+            # await browser_page.pause()
 
-                _, _, _, new_price, _, _, _, _ = new_data
+            more_pages = True
 
-                listing_id, old_prices = saved_results[nepremicnine_id]
+            index = 1
 
-                if old_prices[-1] != new_price:
-                    logger.info("New saved_price detected for %s.", nepremicnine_id)
-                    await database_manager.add_new_price(
-                        listing_id=listing_id,
-                        current_price=new_price,
-                    )
+            while more_pages:
+                if index > 1:
+                    # Close the previous page.
+                    await browser_page.close()
 
-                    print("New data before merging: ", new_data)
+                    # create a new page.
+                    browser_page = await browser.new_page()
 
-                    # Merge old and new prices.
-                    old_prices.append(new_price)
-                    new_data = new_data[:3] + (old_prices,) + new_data[4:]
+                    await browser_page.goto(f"{page_url}{index}/")
 
-                    print("New data after merging: ", new_data)
+                results_tmp, more_pages = await parse_page(browser_page=browser_page)
+                results.update(results_tmp)
+                index += 1
 
-                    discord_listings.append(new_data)
+            for nepremicnine_id, new_data in results.items():
+                logger.debug("Listing ID: %s", nepremicnine_id)
 
-                else:
-                    logger.debug("No new saved_price detected.")
+                if nepremicnine_id in saved_results:
+                    logger.debug("Listing already saved.")
 
-                continue
+                    _, _, _, new_price, _, _, _, _ = new_data
 
-            # We found a new listing.
-            logger.info("New listing found %s.", nepremicnine_id)
+                    listing_id, old_prices = saved_results[nepremicnine_id]
 
-            await database_manager.save_listing(nepremicnine_id, new_data)
+                    if old_prices[-1] != new_price:
+                        logger.info("New saved_price detected for %s.", nepremicnine_id)
+                        await database_manager.add_new_price(
+                            listing_id=listing_id,
+                            current_price=new_price,
+                        )
 
-            # Convert price to a list of prices
-            new_data = new_data[:3] + ([new_data[3]],) + new_data[4:]
-            discord_listings.append(new_data)
-        await browser_page.close()
+                        print("New data before merging: ", new_data)
+
+                        # Merge old and new prices.
+                        old_prices.append(new_price)
+                        new_data = new_data[:3] + (old_prices,) + new_data[4:]
+
+                        print("New data after merging: ", new_data)
+
+                        discord_listings[channel].append(new_data)
+
+                    else:
+                        logger.debug("No new saved_price detected.")
+
+                    continue
+
+                # We found a new listing.
+                logger.info("New listing found %s.", nepremicnine_id)
+
+                await database_manager.save_listing(nepremicnine_id, new_data)
+
+                # Convert price to a list of prices
+                new_data = new_data[:3] + ([new_data[3]],) + new_data[4:]
+                discord_listings[channel].append(new_data)
+            await browser_page.close()
 
     await browser.close()
     logger.info("Spider finished. Found %d new listings.", len(discord_listings))
 
     return discord_listings
+
+
+async def read_config():
+    """
+    Read the config file.
+    Each line in the file contains a channel name and a URL.
+    """
+    with open("config.txt", encoding="utf-8") as file:
+        return [line.strip().split() for line in file.readlines()]

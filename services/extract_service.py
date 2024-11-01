@@ -41,7 +41,7 @@ async def parse_page(
         await browser_page.locator("xpath=//*[@id='pagination']/ul/li[4]/a").count() > 0
     )
 
-    logger.info("Extracting finished.")
+    logger.info("Parsing page finished.")
 
     return extracted_data, more_pages
 
@@ -123,7 +123,7 @@ async def parse_result(
         url,
     )
 
-    logger.info("Extracting finished.")
+    logger.info("Parsing result finished.")
 
     return item_id, (
         title,

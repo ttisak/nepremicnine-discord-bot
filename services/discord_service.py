@@ -37,8 +37,6 @@ class MyDiscordClient(discord.Client):
         Background task that runs every 1 hour.
         :return:
         """
-        channel = self.get_channel(1294990979475963994)  # channel ID goes here
-        # await channel.send("Hello, world!")
 
         # Setup database manager.
         database_manager = DatabaseManager(
@@ -46,54 +44,60 @@ class MyDiscordClient(discord.Client):
         )
 
         # Run the spider.
-        listings = await run_spider(database_manager=database_manager)
+        channel_listings = await run_spider(database_manager=database_manager)
 
-        logging.debug("Found %s new listings.", len(listings))
+        for channel_id, listings in channel_listings.items():
+            logging.debug("Sending listings to channel %s.", channel_id)
 
-        await channel.send(f"Found {len(listings)} new listings.")
+            channel = self.get_channel(int(channel_id))  # channel ID goes here
+            # await channel.send("Hello, world!")
 
-        for listing in listings:
-            title, image_url, description, prices, size, year, floor, url = listing
+            logging.debug("Found %s new listings.", len(listings))
 
-            logging.debug("Listing: %s", listing)
+            await channel.send(f"Found {len(listings)} new listings.")
 
-            embed = discord.Embed(
-                title=title,
-                url=url,
-                description=description,
-                color=discord.Color.blue(),
-            )
-            if image_url:
-                embed.set_image(url=image_url)
-            embed.add_field(
-                name="**Cena**",
-                value=f"{prices[0]:.2f} €",
-                inline=True,
-            )
-            embed.add_field(
-                name="**Velikost**",
-                value=f"{size:.2f} m²",
-                inline=True,
-            )
-            embed.add_field(
-                name="**Zgrajeno leta**",
-                value=year,
-                inline=True,
-            )
-            embed.add_field(
-                name="**Nadstropje**",
-                value=floor,
-                inline=True,
-            )
+            for listing in listings:
+                title, image_url, description, prices, size, year, floor, url = listing
 
-            if len(prices) > 1:
+                logging.debug("Listing: %s", listing)
+
+                embed = discord.Embed(
+                    title=title,
+                    url=url,
+                    description=description,
+                    color=discord.Color.blue(),
+                )
+                if image_url:
+                    embed.set_image(url=image_url)
                 embed.add_field(
-                    name="**Prejšnje cene**",
-                    value=", ".join(f"{price:.2f} €" for price in prices[1:]),
-                    inline=False,
+                    name="**Cena**",
+                    value=f"{prices[0]:.2f} €",
+                    inline=True,
+                )
+                embed.add_field(
+                    name="**Velikost**",
+                    value=f"{size:.2f} m²",
+                    inline=True,
+                )
+                embed.add_field(
+                    name="**Zgrajeno leta**",
+                    value=year,
+                    inline=True,
+                )
+                embed.add_field(
+                    name="**Nadstropje**",
+                    value=floor,
+                    inline=True,
                 )
 
-            await channel.send(embed=embed)
+                if len(prices) > 1:
+                    embed.add_field(
+                        name="**Prejšnje cene**",
+                        value=", ".join(f"{price:.2f} €" for price in prices[1:]),
+                        inline=False,
+                    )
+
+                await channel.send(embed=embed)
 
     @my_background_task.before_loop
     async def before_my_task(self):
