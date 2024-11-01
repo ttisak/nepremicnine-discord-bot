@@ -21,28 +21,41 @@ async def run_spider(database_manager: DatabaseManager):
         # We need to use a real browser because of Cloudflare protection.
         browser = await playwright.chromium.connect_over_cdp("http://localhost:9222")
 
-        # create a new page.
+        # create a new page inside context.
         browser_page = await browser.new_page()
 
         # Prevent loading some resources for better performance.
         # await browser_page.route("**/*", block_aggressively)
 
-        # Run the search!
-        # await search(
-        #     browser_page=browser_page,
-        # )
-        await browser_page.goto(
+        page_url = (
             "https://www.nepremicnine.net/oglasi-oddaja/ljubljana-mesto"
             "/stanovanje/2-sobno,2.5-sobno,3-sobno,3.5-sobno,"
             "4-sobno,4.5-sobno,5-in-vecsobno,apartma/cena-od-300"
             "-do-900-eur-na-mesec,velikost-od-30-m2/"
         )
 
+        await browser_page.goto(page_url)
+
         # await browser_page.pause()
 
         saved_results = await database_manager.get_listings()
 
-        results = await parse_page(browser_page=browser_page)
+        more_pages = True
+        results = {}
+        index = 1
+
+        while more_pages:
+            if index > 1:
+                # Close the previous page.
+                await browser_page.close()
+
+                # create a new page.
+                browser_page = await browser.new_page()
+                await browser_page.goto(f"{page_url}{index}/")
+
+            results_tmp, more_pages = await parse_page(browser_page=browser_page)
+            results.update(results_tmp)
+            index += 1
 
         for nepremicnine_id, new_data in results.items():
             logger.debug("Listing ID: %s", nepremicnine_id)

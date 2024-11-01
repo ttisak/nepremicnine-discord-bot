@@ -7,8 +7,15 @@ from logger.logger import logger
 
 async def parse_page(
     browser_page: Page,
-) -> dict[str, tuple[str, str | None, str, float, float, int, str | None, str | None]]:
-    """Parses the page and extracts data."""
+) -> tuple[
+    dict[str, tuple[str, str | None, str, float, float, int, str | None, str | None]],
+    bool,
+]:
+    """Parses the page and extracts data.
+    Returns a dictionary of listings and a boolean if there are more pages.
+    :param browser_page: Page
+    :return: dict[str, tuple[str, str | None, str, float, float, int, str | None, str | None]], bool
+    """
 
     logger.debug("Parsing page...")
 
@@ -18,21 +25,25 @@ async def parse_page(
     # Wait for the page to load.
     await browser_page.wait_for_load_state("domcontentloaded")
 
+    extracted_data = {}
+
     results = await browser_page.locator(
         """//*[@id="vsebina760"]/div[contains(@class, "seznam")]
         /div/div/div/div[contains(@class, "col-md-6 col-md-12 position-relative")]"""
     ).all()
 
     # Loop through all the listings.
-    extracted_data = {}
-
     for result in results:
         item_id, data = await parse_result(result)
         extracted_data[item_id] = data
 
+    more_pages = (
+        await browser_page.locator("xpath=//*[@id='pagination']/ul/li[4]/a").count() > 0
+    )
+
     logger.info("Extracting finished.")
 
-    return extracted_data
+    return extracted_data, more_pages
 
 
 async def parse_result(
