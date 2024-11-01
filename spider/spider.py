@@ -28,8 +28,6 @@ async def run_spider(database_manager: DatabaseManager):
 
         saved_results = await database_manager.get_listings()
 
-        results = {}
-
         # For each url, send the results to a different channel.
         for channel, page_url in config:
             logger.info("Processing channel %s with URL %s", channel, page_url)
@@ -47,6 +45,8 @@ async def run_spider(database_manager: DatabaseManager):
             more_pages = True
 
             index = 1
+
+            results = {}
 
             while more_pages:
                 if index > 1:
