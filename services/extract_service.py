@@ -24,8 +24,6 @@ async def parse_page(
 
     # Wait for the page to load.
     await browser_page.wait_for_load_state("domcontentloaded")
-    await browser_page.wait_for_load_state("networkidle")
-    await browser_page.wait_for_load_state("load")
 
     extracted_data = {}
 
