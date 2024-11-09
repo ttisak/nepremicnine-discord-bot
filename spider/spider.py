@@ -1,3 +1,4 @@
+# pylint: disable=too-many-locals
 """Module that contains main spider logic."""
 
 from collections import defaultdict

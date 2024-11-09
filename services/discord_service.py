@@ -1,8 +1,10 @@
+# pylint: disable=too-many-locals
 """
 Module that contains discord bot logic.
 """
 
 import logging
+import sys
 
 import discord
 from discord.ext import tasks
@@ -16,7 +18,8 @@ class MyDiscordClient(discord.Client):
     Nepremicnine.si Discord bot client.
     """
 
-    def __init__(self):
+    def __init__(self, database_path):
+        self.database_path = database_path
         super().__init__(intents=discord.Intents.default())
 
     async def setup_hook(self) -> None:
@@ -40,7 +43,7 @@ class MyDiscordClient(discord.Client):
 
         # Setup database manager.
         database_manager = DatabaseManager(
-            url="sqlite+aiosqlite:///nepremicnine_database.sqlite"
+            url="sqlite+aiosqlite:///" + self.database_path
         )
 
         # Run the spider.
@@ -98,6 +101,10 @@ class MyDiscordClient(discord.Client):
                     )
 
                 await channel.send(embed=embed)
+
+        logging.debug("Bot finished.")
+        await self.close()
+        # sys.exit()
 
     @my_background_task.before_loop
     async def before_my_task(self):
