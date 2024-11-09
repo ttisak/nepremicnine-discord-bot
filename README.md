@@ -14,13 +14,6 @@ A discord bot for notifying about new listings on the [nepremicnine.net](https:/
 cp .env.example .env
 ```
 
-Edit **.env** file if necessary. Number of threads can be set using the *N_THREADS* parameter.
-
-### Run Docker Postgres database
-
-```bash
-docker-compose up -d nepremicnine-db
-```
 
 ### Create and use virtual env
 
