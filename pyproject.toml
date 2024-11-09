@@ -20,6 +20,7 @@ pylint = "^3.3.1"
 urllib3 = "^2.2.3"
 aiosqlite = "^0.20.0"
 discord = "^2.3.2"
+pre-commit = "^4.0.1"
 
 [tool.black]
 required-version = "24.10.0"
