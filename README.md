@@ -44,12 +44,6 @@ poetry install
 playwright install
 ```
 
-### Setup the database
-
-```bash
-python setup_db.py
-```
-
 ## Run the local browser
 
 ```bash
@@ -60,16 +54,5 @@ cd 'C:\Program Files\Google\Chrome\Application'
 
 ## Configure the bot
 - Add Discord bot token to the **.env** file.
+- Add database path to the **.env** file.
 - Add discord channel ids and nepremicnine.net search url pairs to the **config.txt** file.
-
-
-## PgAdmin (optional)
-
-You can run PgAdmin Docker container with the following command:
-
-```bash
-docker-compose up -d pgadmin
-```
-
-Access the pgadmin4 via your favorite web browser by visiting the [URL](http://localhost:5050/).
-Use the admin@admin.com as the email address and root as the password to log in.
