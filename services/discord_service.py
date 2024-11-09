@@ -4,8 +4,6 @@ Module that contains discord bot logic.
 """
 
 import logging
-import sys
-
 import discord
 from discord.ext import tasks
 
