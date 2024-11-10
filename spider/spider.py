@@ -10,7 +10,7 @@ from logger.logger import logger
 from services.extract_service import parse_page
 
 
-async def run_spider(database_manager: DatabaseManager):
+async def run_spider(database_manager: DatabaseManager, chrome_url: str):
     """
     Setups the playwright library and starts the crawler.
     """
@@ -22,7 +22,7 @@ async def run_spider(database_manager: DatabaseManager):
     async with async_playwright() as playwright:
         # Connect to the browser.
         # We need to use a real browser because of Cloudflare protection.
-        browser = await playwright.chromium.connect_over_cdp("http://localhost:9222")
+        browser = await playwright.chromium.connect_over_cdp(chrome_url)
 
         # Read page urls from a config file.
         config = await read_config()

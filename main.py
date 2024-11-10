@@ -10,15 +10,16 @@ from logger.logger import logger
 from services.discord_service import MyDiscordClient
 
 
-def load_env() -> tuple[str, str]:
+def load_env() -> tuple[str, str, str]:
     """
     Loads ENV variables.
-    :return: discord_token, database_path
+    :return: discord_token, database_path, chrome_url
     """
     load_dotenv()
     discord_token = os.getenv("DISCORD_TOKEN")
     database_path = os.getenv("DB_PATH")
-    return discord_token, database_path
+    chrome_url = os.getenv("CHROME_URL")
+    return discord_token, database_path, chrome_url
 
 
 async def setup_db(database_path: str):
@@ -52,7 +53,7 @@ def main():
     logger.info("Application started.")
 
     # Load env variables.
-    discord_token, database_path = load_env()
+    discord_token, database_path, chrome_url = load_env()
 
     # Setup database if it does not exist.
     if not os.path.exists(database_path):
@@ -62,7 +63,7 @@ def main():
     else:
         logger.debug("Database already exists.")
 
-    discord_client = MyDiscordClient(database_path=database_path)
+    discord_client = MyDiscordClient(database_path=database_path, chrome_url=chrome_url)
     discord_client.run(token=discord_token, log_handler=None)
 
     logger.info("Application finished.")

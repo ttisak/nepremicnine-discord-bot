@@ -4,6 +4,7 @@ Module that contains discord bot logic.
 """
 
 import logging
+
 import discord
 from discord.ext import tasks
 
@@ -16,8 +17,9 @@ class MyDiscordClient(discord.Client):
     Nepremicnine.si Discord bot client.
     """
 
-    def __init__(self, database_path):
+    def __init__(self, database_path, chrome_url):
         self.database_path = database_path
+        self.chrome_url = chrome_url
         super().__init__(intents=discord.Intents.default())
 
     async def setup_hook(self) -> None:
@@ -45,7 +47,9 @@ class MyDiscordClient(discord.Client):
         )
 
         # Run the spider.
-        channel_listings = await run_spider(database_manager=database_manager)
+        channel_listings = await run_spider(
+            database_manager=database_manager, chrome_url=self.chrome_url
+        )
 
         for channel_id, listings in channel_listings.items():
             logging.debug("Sending listings to channel %s.", channel_id)
