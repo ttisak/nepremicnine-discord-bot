@@ -1,15 +1,22 @@
-version: '3.8'
 name: nepremicnine-discord-bot
 services:
-    nepremicnine-discord-bot:
-        image: nepremicnine-discord-bot
+    python-bot:
+        build: .
         container_name: nepremicnine-discord-bot
-        restart: always
+        depends_on:
+            - browser
+        env_file: ".env"
         environment:
-        - BOT_TOKEN=your_bot_token
-        - DB_PATH=/db/nepremicnine.db
+        - DB_PATH=/db/nepremicnine_db.sqlite
+        - CHROME_URL="ws://browser:3000/chromium/playwright"
         volumes:
-        - db:/
+        - db:/db
+    browser:
+        image: ghcr.io/browserless/chromium
+        container_name: browser
+        restart: always
+        ports:
+            - "3000:3000"
 
 
 
