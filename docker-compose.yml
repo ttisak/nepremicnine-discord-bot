@@ -6,11 +6,13 @@ services:
         depends_on:
             - browser
         env_file: ".env"
+        command:
+            - "python"
         environment:
-        - DB_PATH=/db/nepremicnine_db.sqlite
-        - CHROME_URL="ws://browser:3000/chromium/playwright"
+            - DB_PATH=/db/nepremicnine_db.sqlite
+            - CHROME_URL="ws://browser:3000/chromium/playwright"
         volumes:
-        - db:/db
+            - db:/db
     browser:
         image: ghcr.io/browserless/chromium
         container_name: browser

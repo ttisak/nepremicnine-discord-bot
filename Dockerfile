@@ -41,4 +41,4 @@ COPY . /app
 
 WORKDIR /app
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["/bin/bash"]
