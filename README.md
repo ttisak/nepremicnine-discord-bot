@@ -14,17 +14,6 @@ A discord bot for notifying about new listings on the [nepremicnine.net](https:/
 cp .env.example .env
 ```
 
-
-### Create and use virtual env
-
-```bash
-pip install virtualenv
-python<version> -m venv <virtual-environment-name>
-source env/bin/activate
-```
-
-Alternatively you can set it up using Pycharm.
-
 ### Install requirements
 
 ```bash
@@ -49,3 +38,9 @@ cd 'C:\Program Files\Google\Chrome\Application'
 - Add Discord bot token to the **.env** file.
 - Add database path to the **.env** file.
 - Add discord channel ids and nepremicnine.net search url pairs to the **config.txt** file.
+
+## Run the bot
+
+```bash
+poetry run python main.py
+```
