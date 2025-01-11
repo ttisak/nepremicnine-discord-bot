@@ -10,15 +10,15 @@ services:
             - "python"
         environment:
             - DB_PATH=/db/nepremicnine_db.sqlite
-            - CHROME_URL="ws://browser:3000/chromium/playwright"
+            - CHROME_URL="http://browser:3000"
         volumes:
             - db:/db
     browser:
-        image: ghcr.io/browserless/chromium
+        image: zenika/alpine-chrome
         container_name: browser
-        restart: always
         ports:
-            - "3000:3000"
+            - "9222:9222"
+        command: 'chromium-browser --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222 --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"'
 
 
 
