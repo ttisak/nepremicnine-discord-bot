@@ -10,7 +10,7 @@ from logger.logger import logger
 from services.extract_service import parse_page
 
 
-async def run_spider(database_manager: DatabaseManager, chrome_url: str):
+async def run_spider(database_manager: DatabaseManager):
     """
     Setups the playwright library and starts the crawler.
     """
@@ -33,7 +33,8 @@ async def run_spider(database_manager: DatabaseManager, chrome_url: str):
             logger.info("Processing channel %s with URL %s", channel, page_url)
 
             # create a new page inside context.
-            browser_page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+            browser_page = await browser.new_page(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36") # pylint: disable=line-too-long
 
             # Prevent loading some resources for better performance.
             # await browser_page.route("**/*", block_aggressively)
@@ -58,11 +59,10 @@ async def run_spider(database_manager: DatabaseManager, chrome_url: str):
 
                     await browser_page.goto(f"{page_url}{index}/")
 
-
                 try:
                     results_tmp, more_pages = await parse_page(browser_page=browser_page)
                     results.update(results_tmp)
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-except
                     logger.error("Error parsing page: %s", e)
                 index += 1
 

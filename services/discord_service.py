@@ -17,9 +17,8 @@ class MyDiscordClient(discord.Client):
     Nepremicnine.si Discord bot client.
     """
 
-    def __init__(self, database_path, chrome_url):
+    def __init__(self, database_path):
         self.database_path = database_path
-        self.chrome_url = chrome_url
         super().__init__(intents=discord.Intents.default())
 
     async def setup_hook(self) -> None:
@@ -48,7 +47,7 @@ class MyDiscordClient(discord.Client):
 
         # Run the spider.
         channel_listings = await run_spider(
-            database_manager=database_manager, chrome_url=self.chrome_url
+            database_manager=database_manager
         )
 
         for channel_id, listings in channel_listings.items():
