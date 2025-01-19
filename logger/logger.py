@@ -158,11 +158,11 @@ def init_logging():
     Initializes logging.
     :return:
     """
-    level = logging.DEBUG
+    level = logging.INFO
     root_logger = logging.getLogger()
     root_logger.setLevel(level)
 
-    console_level = "DEBUG"
+    console_level = "INFO"
     console_handler = logging.StreamHandler(stream=sys.stdout)
     console_handler.setLevel(console_level)
     console_format = "[%(asctime)s %(threadName)s %(levelname)s] %(message)s"
@@ -170,12 +170,12 @@ def init_logging():
     console_handler.setFormatter(colored_formatter)
     root_logger.addHandler(console_handler)
 
-    file_handler = logging.FileHandler(filename="app.log", encoding="utf-8", mode="w")
-    file_level = "DEBUG"
-    file_handler.setLevel(file_level)
-    file_format = "[%(asctime)s %(threadName)s, %(levelname)s] %(message)s"
-    file_handler.setFormatter(BraceFormatStyleFormatter(file_format))
-    root_logger.addHandler(file_handler)
+    # file_handler = logging.FileHandler(filename="app.log", encoding="utf-8", mode="w")
+    # file_level = "DEBUG"
+    # file_handler.setLevel(file_level)
+    # file_format = "[%(asctime)s %(threadName)s, %(levelname)s] %(message)s"
+    # file_handler.setFormatter(BraceFormatStyleFormatter(file_format))
+    # root_logger.addHandler(file_handler)
     logging.basicConfig(level=level, format=console_format)
 
 
