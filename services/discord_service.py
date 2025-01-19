@@ -46,9 +46,7 @@ class MyDiscordClient(discord.Client):
         )
 
         # Run the spider.
-        channel_listings = await run_spider(
-            database_manager=database_manager
-        )
+        channel_listings = await run_spider(database_manager=database_manager)
 
         for channel_id, listings in channel_listings.items():
             logging.debug("Sending listings to channel %s.", channel_id)

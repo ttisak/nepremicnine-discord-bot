@@ -34,7 +34,8 @@ async def run_spider(database_manager: DatabaseManager):
 
             # create a new page inside context.
             browser_page = await browser.new_page(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36") # pylint: disable=line-too-long
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+            )  # pylint: disable=line-too-long
 
             # Prevent loading some resources for better performance.
             # await browser_page.route("**/*", block_aggressively)
@@ -60,7 +61,9 @@ async def run_spider(database_manager: DatabaseManager):
                     await browser_page.goto(f"{page_url}{index}/")
 
                 try:
-                    results_tmp, more_pages = await parse_page(browser_page=browser_page)
+                    results_tmp, more_pages = await parse_page(
+                        browser_page=browser_page
+                    )
                     results.update(results_tmp)
                 except Exception as e:  # pylint: disable=broad-except
                     logger.error("Error parsing page: %s", e)

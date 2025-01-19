@@ -39,6 +39,21 @@ cd 'C:\Program Files\Google\Chrome\Application'
 - Add database path to the **.env** file.
 - Add discord channel ids and nepremicnine.net search url pairs to the **config.txt** file.
 
+## Development
+
+### Analyze the code
+
+```bash
+poetry run pylint $(git ls-files '*.py')
+```
+
+### Format the code
+
+```bash
+poetry run black .
+```
+
+
 ## Run the bot
 
 ```bash
