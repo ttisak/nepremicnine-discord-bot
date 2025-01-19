@@ -34,8 +34,9 @@ async def run_spider(database_manager: DatabaseManager):
 
             # create a new page inside context.
             browser_page = await browser.new_page(
+                # pylint: disable=line-too-long
                 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
-            )  # pylint: disable=line-too-long
+            )
 
             # Prevent loading some resources for better performance.
             # await browser_page.route("**/*", block_aggressively)
