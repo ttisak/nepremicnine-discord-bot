@@ -17,7 +17,7 @@ async def parse_page(
     :return: dict[str, tuple[str, str | None, str, float, float, int, str | None, str | None]], bool
     """
 
-    logger.debug("Parsing page...")
+    logger.debug("Parsing page %s.",browser_page.url)
 
     # Reject cookies.
     await browser_page.get_by_role("button", name="Zavrni").click()
@@ -41,7 +41,7 @@ async def parse_page(
         await browser_page.locator("xpath=//*[@id='pagination']/ul/li[4]/a").count() > 0
     )
 
-    logger.info("Parsing page finished.")
+    logger.info("Parsing page %s finished.",browser_page.url)
 
     return extracted_data, more_pages
 
@@ -123,7 +123,7 @@ async def parse_result(
         url,
     )
 
-    logger.info("Parsing result finished.")
+    logger.debug("Parsing result finished.")
 
     return item_id, (
         title,

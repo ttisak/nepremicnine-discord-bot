@@ -2,25 +2,11 @@ name: nepremicnine-discord-bot
 services:
     python-bot:
         build: .
-        container_name: nepremicnine-discord-bot
-        depends_on:
-            - browser
         env_file: ".env"
-        command:
-            - "python"
         environment:
             - DB_PATH=/db/nepremicnine_db.sqlite
-            - CHROME_URL="http://browser:3000"
         volumes:
             - db:/db
-    browser:
-        image: zenika/alpine-chrome
-        container_name: browser
-        ports:
-            - "9222:9222"
-        command: 'chromium-browser --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222 --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"'
-
-
 
 volumes:
   db:

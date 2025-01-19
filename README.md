@@ -23,7 +23,7 @@ poetry install
 ### Install Playwright browsers (chromium, firefox, webkit)
 
 ```bash
-playwright install
+playwright install chromium
 ```
 
 ## Run the local browser

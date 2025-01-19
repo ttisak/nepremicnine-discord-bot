@@ -1,44 +1,42 @@
-FROM python:3.12.7-bookworm AS builder
+FROM python:3.12.7 as python-base
 
-# --- Install Poetry ---
-ARG POETRY_VERSION=1.8
-
+# https://python-poetry.org/docs#ci-recommendations
+ENV POETRY_VERSION=1.8.3
 ENV POETRY_HOME=/opt/poetry
-ENV POETRY_NO_INTERACTION=1
-ENV POETRY_VIRTUALENVS_IN_PROJECT=1
-ENV POETRY_VIRTUALENVS_CREATE=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV POETRY_VENV=/opt/poetry-venv
+
 # Tell Poetry where to place its cache and virtual environment
 ENV POETRY_CACHE_DIR=/opt/.cache
 
-RUN pip install "poetry==${POETRY_VERSION}"
-RUN pip install pytest-playwright
+# Create stage for Poetry installation
+FROM python-base as poetry-base
+
+# Creating a virtual environment just for poetry and install it with pip
+RUN python3 -m venv $POETRY_VENV \
+    && $POETRY_VENV/bin/pip install -U pip setuptools \
+    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+
+# Create a new stage from the base python image
+FROM python-base as app
+
+# Copy Poetry to app image
+COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
+
+# Add Poetry to PATH
+ENV PATH="${PATH}:${POETRY_VENV}/bin"
 
 WORKDIR /app
 
-# --- Reproduce the environment ---
-# You can comment the following two lines if you prefer to manually install
-#   the dependencies from inside the container.
-COPY pyproject.toml poetry.lock /app/
+# Copy Dependencies
+COPY poetry.lock pyproject.toml ./
 
-# Install the dependencies and clear the cache afterwards.
-#   This may save some MBs.
-RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
+# Install Dependencies
+RUN poetry install --no-interaction --no-cache --no-dev --no-root
 
-# Now let's build the runtime image from the builder.
-#   We'll just copy the env and the PATH reference.
-FROM python:3.12.7-bookworm AS runtime
+RUN poetry run playwright install --with-deps chromium
 
-ENV VIRTUAL_ENV=/app/.venv
-ENV PATH="/app/.venv/bin:$PATH"
-
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
-
-# Creating folders, and files for a project:
+# Copy Application
 COPY . /app
 
-WORKDIR /app
-
-ENTRYPOINT ["/bin/bash"]
+# Run Application
+CMD ["poetry", "run", "python", "main.py"]

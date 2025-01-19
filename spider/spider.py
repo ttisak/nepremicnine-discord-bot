@@ -21,8 +21,7 @@ async def run_spider(database_manager: DatabaseManager, chrome_url: str):
 
     async with async_playwright() as playwright:
         # Connect to the browser.
-        # We need to use a real browser because of Cloudflare protection.
-        browser = await playwright.chromium.connect_over_cdp(chrome_url)
+        browser = await playwright.chromium.launch(headless=False)
 
         # Read page urls from a config file.
         config = await read_config()
@@ -34,7 +33,7 @@ async def run_spider(database_manager: DatabaseManager, chrome_url: str):
             logger.info("Processing channel %s with URL %s", channel, page_url)
 
             # create a new page inside context.
-            browser_page = await browser.new_page()
+            browser_page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 
             # Prevent loading some resources for better performance.
             # await browser_page.route("**/*", block_aggressively)
@@ -59,8 +58,12 @@ async def run_spider(database_manager: DatabaseManager, chrome_url: str):
 
                     await browser_page.goto(f"{page_url}{index}/")
 
-                results_tmp, more_pages = await parse_page(browser_page=browser_page)
-                results.update(results_tmp)
+
+                try:
+                    results_tmp, more_pages = await parse_page(browser_page=browser_page)
+                    results.update(results_tmp)
+                except Exception as e:
+                    logger.error("Error parsing page: %s", e)
                 index += 1
 
             for nepremicnine_id, new_data in results.items():
