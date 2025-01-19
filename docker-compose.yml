@@ -2,6 +2,8 @@ name: nepremicnine-discord-bot
 services:
     python-bot:
         build: .
+        env_file:
+            - stack.env
         environment:
             - DB_PATH=/db/nepremicnine_db.sqlite
             - DISPLAY=:0
@@ -9,8 +11,6 @@ services:
             - db:/db
             - /tmp/.X11-unix:/tmp/.X11-unix
         command: ["poetry", "run", "python", "main.py"]
-        env_file:
-            -   stack.env
 
 volumes:
   db:
