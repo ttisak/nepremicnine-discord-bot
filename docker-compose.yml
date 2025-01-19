@@ -2,7 +2,6 @@ name: nepremicnine-discord-bot
 services:
     python-bot:
         build: .
-        env_file: ".env"
         environment:
             - DB_PATH=/db/nepremicnine_db.sqlite
             - DISPLAY=:0
