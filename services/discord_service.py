@@ -33,12 +33,14 @@ class MyDiscordClient(discord.Client):
         logging.debug("""Logged in as %s (ID: %s)""", self.user, self.user.id)
         logging.debug("------")
 
-    @tasks.loop(hours=1)  # task runs every 1 hour
+    @tasks.loop(days=1)  # task runs every 1 hour
     async def my_background_task(self):
         """
-        Background task that runs every 1 hour.
+        Background task that runs every day.
         :return:
         """
+
+        logging.info("Scan started.")
 
         # Setup database manager.
         database_manager = DatabaseManager(
@@ -101,9 +103,7 @@ class MyDiscordClient(discord.Client):
 
                 await channel.send(embed=embed)
 
-        logging.debug("Bot finished.")
-        await self.close()
-        # sys.exit()
+        logging.info("Scan finished.")
 
     @my_background_task.before_loop
     async def before_my_task(self):
