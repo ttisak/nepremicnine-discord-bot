@@ -9,6 +9,8 @@ services:
             - db:/db
             - /tmp/.X11-unix:/tmp/.X11-unix
         command: ["poetry", "run", "python", "main.py"]
+        env_file:
+            -   stack.env
 
 volumes:
   db:
