@@ -2,6 +2,7 @@ name: nepremicnine-discord-bot
 services:
     python-bot:
         build: .
+        pull_policy: build
         env_file:
             - stack.env
         environment:
