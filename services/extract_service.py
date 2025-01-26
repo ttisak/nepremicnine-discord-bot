@@ -39,7 +39,10 @@ async def parse_page(
 
     # Check if there is a next page button.
     more_pages = (
-        await browser_page.locator("xpath=//*[@id='pagination']/ul/li[contains(@class, 'paging_next')]").count() > 0
+        await browser_page.locator(
+            """xpath=//*[@id='pagination']
+            /ul/li[contains(@class, 'paging_next')]"""
+        ).count() > 0
     )
 
     logger.info("Parsing page %s finished.", browser_page.url)
