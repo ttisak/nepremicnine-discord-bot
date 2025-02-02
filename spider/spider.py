@@ -10,9 +10,10 @@ from logger.logger import logger
 from services.extract_service import parse_page
 
 
-async def run_spider(database_manager: DatabaseManager):
+async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
     """
-    Setups the playwright library and starts the crawler.
+    Setups the playwright library and runs the crawler.
+    Returns a dictionary with listings and a boolean indicating if an error occurred.
     """
     logger.info("Spider started.")
 
@@ -47,6 +48,8 @@ async def run_spider(database_manager: DatabaseManager):
 
             more_pages = True
 
+            error = False
+
             index = 1
 
             results = {}
@@ -68,6 +71,7 @@ async def run_spider(database_manager: DatabaseManager):
                     results.update(results_tmp)
                 except Exception as e:  # pylint: disable=broad-except
                     logger.error("Error parsing page: %s", e)
+                    error = True
                 index += 1
 
             for nepremicnine_id, new_data in results.items():
@@ -115,7 +119,7 @@ async def run_spider(database_manager: DatabaseManager):
     await browser.close()
     logger.info("Spider finished. Found %d new listings.", len(discord_listings))
 
-    return discord_listings
+    return discord_listings, error
 
 
 async def read_config():

@@ -48,7 +48,7 @@ class MyDiscordClient(discord.Client):
         )
 
         # Run the spider.
-        channel_listings = await run_spider(database_manager=database_manager)
+        channel_listings, error = await run_spider(database_manager=database_manager)
 
         for channel_id, listings in channel_listings.items():
             logging.debug("Sending listings to channel %s.", channel_id)
@@ -102,6 +102,9 @@ class MyDiscordClient(discord.Client):
                     )
 
                 await channel.send(embed=embed)
+
+            if error:
+                await channel.send("An error occurred while scanning the website.")
 
         logging.info("Scan finished.")
 
