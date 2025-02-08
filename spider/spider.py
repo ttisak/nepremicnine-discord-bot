@@ -85,7 +85,9 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
                     listing_id, old_prices = saved_results[nepremicnine_id]
 
                     if old_prices[-1] != new_price:
-                        logger.debug("New saved_price detected for %s.", nepremicnine_id)
+                        logger.debug(
+                            "New saved_price detected for %s.", nepremicnine_id
+                        )
                         await database_manager.add_new_price(
                             listing_id=listing_id,
                             current_price=new_price,

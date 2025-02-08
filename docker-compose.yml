@@ -3,6 +3,7 @@ services:
     python-bot:
         build: .
         pull_policy: build
+        restart: always
         env_file:
             - stack.env
         environment:
