@@ -31,7 +31,7 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
 
         # For each url, send the results to a different channel.
         for channel, page_url in config:
-            logger.info("Processing channel %s with URL %s", channel, page_url)
+            logger.debug("Processing channel %s with URL %s", channel, page_url)
 
             # create a new page inside context.
             browser_page = await browser.new_page(
@@ -85,7 +85,7 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
                     listing_id, old_prices = saved_results[nepremicnine_id]
 
                     if old_prices[-1] != new_price:
-                        logger.info("New saved_price detected for %s.", nepremicnine_id)
+                        logger.debug("New saved_price detected for %s.", nepremicnine_id)
                         await database_manager.add_new_price(
                             listing_id=listing_id,
                             current_price=new_price,
@@ -107,7 +107,7 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
                     continue
 
                 # We found a new listing.
-                logger.info("New listing found %s.", nepremicnine_id)
+                logger.debug("New listing found %s.", nepremicnine_id)
 
                 await database_manager.save_listing(nepremicnine_id, new_data)
 

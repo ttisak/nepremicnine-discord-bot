@@ -27,7 +27,7 @@ async def setup_db(database_path: str):
     :param database_path: str
     :return:
     """
-    logger.info("DB setup started.")
+    logger.debug("DB setup started.")
 
     # Delete existing database if it exists.
     if os.path.exists(database_path):
