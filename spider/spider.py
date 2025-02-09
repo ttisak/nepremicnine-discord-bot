@@ -33,8 +33,6 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
         for channel, page_url in config:
             logger.debug("Processing channel %s with URL %s", channel, page_url)
 
-            discord_listings[channel] = []
-
             # create a new page inside context.
             browser_page = await browser.new_page(
                 # pylint: disable=line-too-long
@@ -117,7 +115,7 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
             await browser_page.close()
 
     await browser.close()
-    logger.info("Spider finished.")
+    logger.info("Spider finished. Found %d new listings.", len(discord_listings))
 
     return discord_listings, error
 
