@@ -95,13 +95,9 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
                             current_price=new_price,
                         )
 
-                        print("New data before merging: ", new_data)
-
                         # Merge old and new prices.
                         old_prices.append(new_price)
                         new_data = new_data[:3] + (old_prices,) + new_data[4:]
-
-                        print("New data after merging: ", new_data)
 
                         discord_listings[channel].append(new_data)
 
