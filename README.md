@@ -23,16 +23,9 @@ poetry install
 ### Install Playwright browsers (chromium, firefox, webkit)
 
 ```bash
-playwright install chromium
+poetry run playwright install chromium
 ```
 
-## Run the local browser
-
-```bash
-cd 'C:\Program Files\Google\Chrome\Application'
-./chrome.exe -remote-debugging-port=9222
-
-```
 
 ## Configure the bot
 - Add Discord bot token to the **.env** file.
