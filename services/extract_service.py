@@ -1,3 +1,4 @@
+# pylint: disable=too-many-locals
 """Module that contains data extraction logic."""
 
 from playwright.async_api import Page, Locator
