@@ -29,6 +29,8 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
 
         saved_results = await database_manager.get_listings()
 
+        error = False
+
         # For each url, send the results to a different channel.
         for channel, page_url in config:
             logger.debug("Processing channel %s with URL %s", channel, page_url)
@@ -47,8 +49,6 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
             # await browser_page.pause()
 
             more_pages = True
-
-            error = False
 
             index = 1
 
@@ -115,7 +115,11 @@ async def run_spider(database_manager: DatabaseManager) -> tuple[dict, bool]:
             await browser_page.close()
 
     await browser.close()
-    logger.info("Spider finished. Found %d new listings.", len(discord_listings))
+
+    # Count all listings in discord_listings.
+    total_listings = sum(len(listings) for listings in discord_listings.values())
+
+    logger.info("Spider finished. Found %d new listings.", total_listings)
 
     return discord_listings, error
 

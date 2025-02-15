@@ -58,9 +58,16 @@ async def parse_result(
 
     logger.debug("Extracting result data...")
 
-    image_url = await item.locator(
+    image_locator = item.locator(
         'xpath=div/div[contains(@class, "property-image")]/a[2]/img'
-    ).first.get_attribute("data-src")
+    )
+
+    image_url = None
+
+    if (await image_locator.count()) > 0:
+        image_url = await item.locator(
+            'xpath=div/div[contains(@class, "property-image")]/a[2]/img'
+        ).first.get_attribute("data-src")
 
     # Replace the url domain, so it will work on Discord.
     if image_url and image_url.startswith("http"):
