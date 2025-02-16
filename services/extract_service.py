@@ -35,8 +35,11 @@ async def parse_page(
 
     # Loop through all the listings.
     for result in results:
-        item_id, data = await parse_result(result)
-        extracted_data[item_id] = data
+        try:
+            item_id, data = await parse_result(result)
+            extracted_data[item_id] = data
+        except Exception as e:  # pylint: disable=broad-except
+            logger.warning("Error parsing result: %s", e)
 
     # Check if there is a next page button.
     more_pages = (
