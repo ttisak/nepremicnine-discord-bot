@@ -33,7 +33,7 @@ class MyDiscordClient(discord.Client):
         logging.debug("""Logged in as %s (ID: %s)""", self.user, self.user.id)
         logging.debug("------")
 
-    @tasks.loop(hours=24)  # task runs every 1 hour
+    @tasks.loop(hours=6)  # task runs every 6 hour
     async def my_background_task(self):
         """
         Background task that runs every day.
