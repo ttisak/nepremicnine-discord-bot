@@ -87,16 +87,18 @@ class MyDiscordClient(discord.Client):
                         value=f"{size:.2f} m²",
                         inline=True,
                     )
-                    embed.add_field(
-                        name="**Zgrajeno leta**",
-                        value=year,
-                        inline=True,
-                    )
-                    embed.add_field(
-                        name="**Nadstropje**",
-                        value=floor,
-                        inline=True,
-                    )
+                    if year:
+                        embed.add_field(
+                            name="**Zgrajeno leta**",
+                            value=year,
+                            inline=True,
+                        )
+                    if floor:
+                        embed.add_field(
+                            name="**Nadstropje**",
+                            value=floor,
+                            inline=True,
+                        )
 
                     if len(prices) > 1:
                         embed.add_field(

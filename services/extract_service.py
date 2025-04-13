@@ -99,10 +99,18 @@ async def parse_result(
     props = await details.locator(
         'xpath=ul[@itemprop="disambiguatingDescription"]/li'
     ).all()
-    size = float((await props[0].inner_text()).split(" ")[0].replace(",", "."))
-    year = int(await props[1].inner_text())
 
-    floor = await props[2].inner_text() if len(props) > 2 else None
+    size = float(
+        (await props[0].inner_text()).split(" ")[0].replace(".", "").replace(",", ".")
+    )
+
+    if len(props) > 1:
+        year = int(await props[1].inner_text())
+        floor = await props[2].inner_text() if len(props) > 2 else None
+
+    else:
+        year = None
+        floor = None
 
     price = float(
         await details.locator('xpath=meta[@itemprop="price"]').get_attribute("content")
