@@ -9,3 +9,4 @@ README.md
 *.sqlite
 docker-compose.yml
 Dockerfile
+config.txt
