@@ -56,7 +56,7 @@ class MyDiscordClient(discord.Client):
                 logger.debug("Sending listings to channel %s.", channel_id)
 
                 channel = self.get_channel(int(channel_id))  # channel ID goes here
-                # await channel.send("Hello, world!")
+                await channel.send("Hello, world!")
 
                 # logger.debug("Found %s new listings.", len(listings))
 
@@ -107,7 +107,7 @@ class MyDiscordClient(discord.Client):
                             inline=False,
                         )
 
-                    # await channel.send(embed=embed)
+                    await channel.send(embed=embed)
 
                 if error:
                     await channel.send("An error occurred while scanning the website.")
