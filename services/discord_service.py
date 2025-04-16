@@ -58,7 +58,7 @@ class MyDiscordClient(discord.Client):
                 channel = self.get_channel(int(channel_id))  # channel ID goes here
                 # await channel.send("Hello, world!")
 
-                logger.debug("Found %s new listings.", len(listings))
+                # logger.debug("Found %s new listings.", len(listings))
 
                 await channel.send(f"Found {len(listings)} new listings.")
 
@@ -79,7 +79,7 @@ class MyDiscordClient(discord.Client):
                         embed.set_image(url=image_url)
                     embed.add_field(
                         name="**Cena**",
-                        value=f"{prices[0]:.2f} €",
+                        value=f"{prices[-1]:.2f} €",
                         inline=True,
                     )
                     embed.add_field(
@@ -103,11 +103,11 @@ class MyDiscordClient(discord.Client):
                     if len(prices) > 1:
                         embed.add_field(
                             name="**Prejšnje cene**",
-                            value=", ".join(f"{price:.2f} €" for price in prices[1:]),
+                            value=", ".join(f"{price:.2f} €" for price in prices[:-1]),
                             inline=False,
                         )
 
-                    await channel.send(embed=embed)
+                    # await channel.send(embed=embed)
 
                 if error:
                     await channel.send("An error occurred while scanning the website.")
