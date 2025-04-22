@@ -56,9 +56,8 @@ class MyDiscordClient(discord.Client):
                 logger.debug("Sending listings to channel %s.", channel_id)
 
                 channel = self.get_channel(int(channel_id))  # channel ID goes here
-                await channel.send("Hello, world!")
 
-                # logger.debug("Found %s new listings.", len(listings))
+                logger.debug("Found %s new listings.", len(listings))
 
                 await channel.send(f"Found {len(listings)} new listings.")
 
